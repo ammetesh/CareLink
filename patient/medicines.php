@@ -76,17 +76,41 @@ No medicines added yet.
 
 <tr>
 
-<th class="p-4 text-left">Medicine</th>
+<th class="p-4 text-left">
 
-<th class="p-4 text-left">Dosage</th>
+Medicine
 
-<th class="p-4 text-left">Frequency</th>
+</th>
 
-<th class="p-4 text-left">Meal Timing</th>
+<th class="p-4 text-left">
 
-<th class="p-4 text-left">Status</th>
+Dosage
 
-<th class="p-4 text-center">Actions</th>
+</th>
+
+<th class="p-4 text-left">
+
+Take During
+
+</th>
+
+<th class="p-4 text-left">
+
+Meal Timing
+
+</th>
+
+<th class="p-4 text-left">
+
+Status
+
+</th>
+
+<th class="p-4 text-center">
+
+Actions
+
+</th>
 
 </tr>
 
@@ -100,13 +124,16 @@ while($row=$result->fetch_assoc()){
 
 ?>
 
-<tr class="border-b">
+<tr class="border-b hover:bg-gray-50">
 
 <td class="p-4">
+
+💊
 
 <?php echo htmlspecialchars($row["medicine_name"]); ?>
 
 </td>
+
 
 <td class="p-4">
 
@@ -114,17 +141,20 @@ while($row=$result->fetch_assoc()){
 
 </td>
 
+
 <td class="p-4">
 
-<?php echo htmlspecialchars($row["frequency"]); ?>
+<?php echo htmlspecialchars($row["take_time"]); ?>
 
 </td>
+
 
 <td class="p-4">
 
 <?php echo htmlspecialchars($row["meal_timing"]); ?>
 
 </td>
+
 
 <td class="p-4">
 
@@ -144,6 +174,7 @@ echo "<span class='text-red-600 font-semibold'>Inactive</span>";
 
 </td>
 
+
 <td class="p-4 text-center">
 
 <div class="flex justify-center gap-3">
@@ -151,23 +182,33 @@ echo "<span class='text-red-600 font-semibold'>Inactive</span>";
 <a
 href="schedule_medicine.php?id=<?php echo $row['id']; ?>"
 class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded">
-Schedule
+
+View Schedule
+
 </a>
+
 
 <a
 href="edit_medicine.php?id=<?php echo $row['id']; ?>"
 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
+
 Edit
+
 </a>
+
 
 <a
 href="delete_medicine.php?id=<?php echo $row['id']; ?>"
 onclick="return confirm('Delete this medicine?')"
 class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+
 Delete
+
 </a>
 
+
 </div>
+
 </td>
 
 </tr>

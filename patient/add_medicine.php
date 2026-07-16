@@ -12,62 +12,136 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $patient_id = $_SESSION["user_id"];
     $medicine_name = trim($_POST["medicine_name"]);
     $dosage = trim($_POST["dosage"]);
-    $frequency = $_POST["frequency"];
+    $take_time="";
+
+if(isset($_POST["take_time"])){
+
+$take_time=implode(",",$_POST["take_time"]);
+
+}
     $meal_timing = $_POST["meal_timing"];
-    $instructions = trim($_POST["instructions"]);
-    $notes = trim($_POST["notes"]);
     $start_date = $_POST["start_date"];
     $end_date = $_POST["end_date"];
 
-    if ($start_date > $end_date) {
+    if(empty($take_time)){
 
-        $message = "End date cannot be earlier than Start date.";
-        $messageType = "error";
+    $message = "Please select at least one time slot.";
 
-    } else {
+    $messageType = "error";
+
+}
+
+else if($start_date > $end_date) {
+
+    $message = "End date cannot be earlier than Start date.";
+
+    $messageType = "error";
+
+}
+
+else {
 
         $stmt = $conn->prepare("
             INSERT INTO medicines
             (
                 patient_id,
-                medicine_name,
-                dosage,
-                frequency,
-                meal_timing,
-                instructions,
-                notes,
-                start_date,
-                end_date
+medicine_name,
+dosage,
+take_time,
+meal_timing,
+start_date,
+end_date
             )
             VALUES
-            (?,?,?,?,?,?,?,?,?)
+            (?,?,?,?,?,?,?)
         ");
 
         $stmt->bind_param(
-            "issssssss",
+            "issssss",
             $patient_id,
-            $medicine_name,
-            $dosage,
-            $frequency,
-            $meal_timing,
-            $instructions,
-            $notes,
-            $start_date,
-            $end_date
+$medicine_name,
+$dosage,
+$take_time,
+$meal_timing,
+$start_date,
+$end_date
         );
+if ($stmt->execute()) {
 
-        if ($stmt->execute()) {
+    $medicine_id = $conn->insert_id;
 
-            $message = "Medicine added successfully!";
-            $messageType = "success";
 
-        } else {
+    /*----------------------------------
+        AUTO SCHEDULE SYSTEM
+    ----------------------------------*/
 
-            $message = "Something went wrong. Please try again.";
-            $messageType = "error";
+    $schedule_times = [];
+
+    if(isset($_POST["take_time"])){
+
+        foreach($_POST["take_time"] as $time){
+
+            if($time=="Morning"){
+
+                $schedule_times[] = "08:00:00";
+
+            }
+
+            if($time=="Afternoon"){
+
+                $schedule_times[] = "13:00:00";
+
+            }
+
+            if($time=="Night"){
+
+                $schedule_times[] = "20:00:00";
+
+            }
 
         }
 
+    }
+
+
+    foreach($schedule_times as $dose_time){
+
+        $schedule_stmt = $conn->prepare("
+
+        INSERT INTO schedules
+        (medicine_id,dose_time)
+
+        VALUES
+
+        (?,?)
+
+        ");
+
+        $schedule_stmt->bind_param(
+        "is",
+        $medicine_id,
+        $dose_time
+        );
+
+        $schedule_stmt->execute();
+
+        $schedule_stmt->close();
+
+    }
+
+
+    $message = "Medicine added and automatically scheduled successfully!";
+
+    $messageType = "success";
+
+
+} else {
+
+    $message = "Something went wrong. Please try again.";
+
+    $messageType = "error";
+
+}
         $stmt->close();
     }
 }
@@ -81,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </h1>
 
     <p class="text-gray-500 mb-8">
-        Fill in the medicine details below.
+        Add your prescribed medicine details below.
     </p>
 
     <?php if($message!=""): ?>
@@ -133,34 +207,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
 
-        <!-- Frequency -->
+<!-- Take During -->
 
-        <div class="mb-5">
+<div class="mb-5">
 
-            <label class="font-semibold block mb-2">
-                Frequency
-            </label>
+<label class="font-semibold block mb-3">
 
-            <select
-                name="frequency"
-                class="w-full border rounded-lg p-3">
+Take During
 
-                <option>Once Daily</option>
-                <option>Twice Daily</option>
-                <option>Three Times Daily</option>
-                <option>Weekly</option>
-                <option>As Needed</option>
+</label>
 
-            </select>
+<div class="flex gap-8">
 
-        </div>
+<label>
+
+<input
+type="checkbox"
+name="take_time[]"
+value="Morning">
+
+Morning
+
+</label>
+
+
+<label>
+
+<input
+type="checkbox"
+name="take_time[]"
+value="Afternoon">
+
+Afternoon
+
+</label>
+
+
+<label>
+
+<input
+type="checkbox"
+name="take_time[]"
+value="Night">
+
+Night
+
+</label>
+
+</div>
+
+</div>
 
         <!-- Meal Timing -->
 
         <div class="mb-5">
 
             <label class="font-semibold block mb-2">
-                Meal Timing
+               Take Relative To Meals
             </label>
 
             <select
@@ -176,36 +279,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         </div>
 
-        <!-- Instructions -->
-
-        <div class="mb-5">
-
-            <label class="font-semibold block mb-2">
-                Instructions
-            </label>
-
-            <textarea
-                name="instructions"
-                rows="3"
-                class="w-full border rounded-lg p-3"></textarea>
-
-        </div>
-
-        <!-- Notes -->
-
-        <div class="mb-5">
-
-            <label class="font-semibold block mb-2">
-                Additional Notes
-            </label>
-
-            <textarea
-                name="notes"
-                rows="3"
-                class="w-full border rounded-lg p-3"></textarea>
-
-        </div>
-
+        
         <!-- Dates -->
 
         <div class="grid md:grid-cols-2 gap-6">

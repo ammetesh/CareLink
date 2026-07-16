@@ -6,101 +6,188 @@ require_once "../config/db.php";
 
 $medicine_id = $_GET["id"];
 
-$message = "";
+$medicine = $conn->query("
+SELECT
+medicine_name,
+take_time,
+meal_timing
+FROM medicines
+WHERE id=$medicine_id
+")->fetch_assoc();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $dose_time = $_POST["dose_time"];
-
-    $stmt = $conn->prepare("
-    INSERT INTO schedules(medicine_id,dose_time)
-    VALUES(?,?)
-    ");
-
-    $stmt->bind_param("is",$medicine_id,$dose_time);
-
-    if($stmt->execute()){
-
-        $message="Schedule Added!";
-
-    }
-
-}
-
-$medicine = $conn->query("SELECT medicine_name FROM medicines WHERE id=$medicine_id")->fetch_assoc();
-
-$schedules = $conn->query("SELECT * FROM schedules WHERE medicine_id=$medicine_id ORDER BY dose_time");
+$schedules = $conn->query("
+SELECT *
+FROM schedules
+WHERE medicine_id=$medicine_id
+ORDER BY dose_time
+");
 
 ?>
 
-<div class="max-w-3xl mx-auto mt-10 bg-white rounded-xl shadow p-8">
+<div class="max-w-4xl mx-auto mt-10 bg-white rounded-xl shadow-lg p-8">
+
 
 <h1 class="text-3xl font-bold">
 
-Schedule Medicine
+Auto Scheduled Medicine
 
 </h1>
 
-<h2 class="text-blue-600 mt-2 mb-8">
 
-<?php echo $medicine["medicine_name"]; ?>
+<p class="text-gray-500 mt-2">
+
+Schedules are automatically generated based on your selected timings.
+
+</p>
+
+
+
+<div class="bg-blue-50 rounded-xl p-6 mt-8">
+
+<h2 class="text-2xl font-bold text-blue-700">
+
+<?php echo htmlspecialchars($medicine["medicine_name"]); ?>
 
 </h2>
 
+
+<p class="mt-4">
+
+<strong>Take During :</strong>
+
 <?php
 
-if($message!=""){
-
-echo "<div class='bg-green-100 p-3 rounded mb-5'>$message</div>";
-
-}
+echo htmlspecialchars($medicine["take_time"]);
 
 ?>
 
-<form method="POST">
+</p>
 
-<input
 
-type="time"
+<p class="mt-2">
 
-name="dose_time"
+<strong>Meal Timing :</strong>
 
-required
+<?php
 
-class="border p-3 rounded">
+echo htmlspecialchars($medicine["meal_timing"]);
 
-<button
+?>
 
-class="bg-blue-600 text-white px-5 py-3 rounded ml-3">
+</p>
 
-Add Time
 
-</button>
+</div>
 
-</form>
 
-<hr class="my-8">
 
-<h2 class="text-2xl font-bold mb-4">
+<div class="mt-10">
 
-Current Schedule
+<h2 class="text-2xl font-bold mb-5">
+
+Medicine Schedule
 
 </h2>
 
+
 <?php
+
+if($schedules->num_rows==0){
+
+?>
+
+<div class="bg-yellow-50 border border-yellow-300 rounded-xl p-5">
+
+No schedules have been created yet.
+
+</div>
+
+<?php
+
+}else{
+
 
 while($row=$schedules->fetch_assoc()){
 
-echo "<div class='flex justify-between border-b py-3'>";
+?>
 
-echo "<span>".$row["dose_time"]."</span>";
+<div class="flex justify-between items-center border-b py-4">
 
-echo "</div>";
+<div>
+
+<p class="font-semibold">
+
+Medicine Reminder
+
+</p>
+
+<p class="text-gray-500">
+
+<?php
+
+echo date(
+
+"h:i A",
+
+strtotime($row["dose_time"])
+
+);
+
+?>
+
+</p>
+
+</div>
+
+
+<div class="text-green-600 font-bold">
+
+Auto Scheduled ✓
+
+</div>
+
+
+</div>
+
+
+<?php
+
+}
 
 }
 
 ?>
 
+
 </div>
+
+
+
+<div class="bg-green-50 border border-green-300 rounded-xl p-6 mt-10">
+
+
+<h3 class="text-xl font-bold text-green-700">
+
+Smart Reminder System (Coming Soon)
+
+</h3>
+
+
+<p class="mt-3 text-gray-700">
+
+CareLink will automatically remind patients to take their medicines
+during the scheduled time period. Family members will also be alerted
+if medicines are repeatedly missed.
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
 
 <?php include "../includes/footer.php"; ?>

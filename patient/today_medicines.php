@@ -12,8 +12,20 @@ SELECT
 medicines.medicine_name,
 medicines.dosage,
 medicines.meal_timing,
+
 schedules.id AS schedule_id,
-schedules.dose_time
+schedules.dose_time,
+
+dose_logs.status
+
+FROM medicines
+
+JOIN schedules
+ON medicines.id=schedules.medicine_id
+
+LEFT JOIN dose_logs
+ON schedules.id=dose_logs.schedule_id
+AND dose_logs.log_date=CURDATE()
 
 FROM medicines
 
@@ -61,7 +73,7 @@ No medicines scheduled.
 <?php
 
 }
-
+$status = $row["status"] ?? "Pending";
 while($row=$result->fetch_assoc()){
 
 ?>
@@ -85,6 +97,39 @@ while($row=$result->fetch_assoc()){
 <br>
 
 <?php echo $row["meal_timing"]; ?>
+<br><br>
+
+<p class="text-blue-600 font-semibold">
+
+Reminder Status :
+
+</p>
+
+
+<?php
+
+$currentTime = date("H:i:s");
+
+
+if($status=="Taken"){
+
+echo "● Medicine completed successfully.";
+
+}
+
+else if($status=="Skipped"){
+
+echo "● Medicine was skipped.";
+
+}
+
+else{
+
+echo "● Reminder Active.";
+
+}
+
+?>
 
 </p>
 
@@ -104,6 +149,12 @@ while($row=$result->fetch_assoc()){
 
 <div class="flex gap-4 mt-6">
 
+<?php
+
+if($status=="Pending"){
+
+?>
+
 <a
 href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Taken"
 class="bg-green-600 text-white px-4 py-2 rounded">
@@ -111,6 +162,7 @@ class="bg-green-600 text-white px-4 py-2 rounded">
 Taken
 
 </a>
+
 
 <a
 href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Snoozed"
@@ -120,6 +172,7 @@ Snooze
 
 </a>
 
+
 <a
 href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Skipped"
 class="bg-red-600 text-white px-4 py-2 rounded">
@@ -127,6 +180,25 @@ class="bg-red-600 text-white px-4 py-2 rounded">
 Skip
 
 </a>
+
+
+<?php
+
+}else{
+
+?>
+
+<span class="text-green-600 font-semibold">
+
+Already Marked ✓
+
+</span>
+
+<?php
+
+}
+
+?>
 
 </div>
 
