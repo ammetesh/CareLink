@@ -440,7 +440,7 @@ style="width:<?php echo $adherence;?>%;">
     <?php
 
     if($todayMedicines->num_rows==0){
-
+?>
         <div class="text-center py-10">
 
 <h3 class="text-2xl font-bold">
@@ -456,7 +456,7 @@ You're all caught up for now.
 </p>
 
 </div>
-
+<?php
     }else{
 
     ?>
@@ -595,7 +595,7 @@ if($status=="Pending"){
 ?>
 
 <a
-href="mark.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Taken"
+href="dashboard.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Taken"
 class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm">
 
 Taken
@@ -603,7 +603,7 @@ Taken
 </a>
 
 <a
-href="mark.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Skipped"
+href="dashboard.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Skipped"
 class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded text-sm ml-2">
 
 Skip
@@ -611,7 +611,7 @@ Skip
 </a>
 
 <a
-href="mark.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Snoozed"
+href="dashboard.php?id=<?php echo $medicine["schedule_id"]; ?>&status=Snoozed"
 class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded text-sm ml-2">
 
 Snooze
