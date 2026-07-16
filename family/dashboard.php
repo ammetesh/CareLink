@@ -21,12 +21,14 @@ $stmt->execute();
 
 $link = $stmt->get_result()->fetch_assoc();
 
-if (!$link) {
-    die("No patient linked to this family account.");
+if(!$link){
+
+    header("Location: link_patient.php");
+    exit();
+
 }
 
 $patient_id = $link["patient_id"];
-
 /* ===============================
    PATIENT NAME
 ================================ */
