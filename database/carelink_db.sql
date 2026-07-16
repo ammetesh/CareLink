@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2026 at 07:22 AM
+-- Generation Time: Jul 16, 2026 at 10:02 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -54,7 +54,8 @@ CREATE TABLE `dose_logs` (
 --
 
 INSERT INTO `dose_logs` (`id`, `schedule_id`, `log_date`, `status`, `taken_time`) VALUES
-(1, 1, '2026-07-16', 'Taken', '2026-07-16 05:13:33');
+(1, 1, '2026-07-16', 'Taken', '2026-07-16 05:13:33'),
+(2, 3, '2026-07-16', 'Taken', '2026-07-16 07:30:52');
 
 -- --------------------------------------------------------
 
@@ -87,6 +88,7 @@ CREATE TABLE `medicines` (
   `patient_id` int(11) NOT NULL,
   `medicine_name` varchar(100) NOT NULL,
   `dosage` varchar(50) DEFAULT NULL,
+  `take_time` varchar(100) DEFAULT NULL,
   `frequency` enum('Once Daily','Twice Daily','Three Times Daily','Weekly','As Needed') NOT NULL,
   `meal_timing` enum('Before Food','After Food','With Food','Anytime') DEFAULT 'Anytime',
   `is_active` tinyint(1) DEFAULT 1,
@@ -100,9 +102,10 @@ CREATE TABLE `medicines` (
 -- Dumping data for table `medicines`
 --
 
-INSERT INTO `medicines` (`id`, `patient_id`, `medicine_name`, `dosage`, `frequency`, `meal_timing`, `is_active`, `instructions`, `notes`, `start_date`, `end_date`) VALUES
-(1, 1, 'Paracetamol', '450', 'Twice Daily', 'After Food', 1, 'Break into half and eat', 'May avoid if no pain', '2026-07-15', '2026-07-22'),
-(2, 3, 'Paracetamol', '450', 'Once Daily', 'Before Food', 1, 'Eat half only', 'nil', '2026-07-15', '2026-07-22');
+INSERT INTO `medicines` (`id`, `patient_id`, `medicine_name`, `dosage`, `take_time`, `frequency`, `meal_timing`, `is_active`, `instructions`, `notes`, `start_date`, `end_date`) VALUES
+(1, 1, 'Paracetamol', '450', NULL, 'Twice Daily', 'After Food', 1, 'Break into half and eat', 'May avoid if no pain', '2026-07-15', '2026-07-22'),
+(2, 3, 'Paracetamol', '450', NULL, 'Once Daily', 'Before Food', 1, 'Eat half only', 'nil', '2026-07-15', '2026-07-22'),
+(3, 4, 'citrizen', '250', NULL, 'Once Daily', 'After Food', 1, 'night time', '', '2026-07-16', '2026-07-23');
 
 -- --------------------------------------------------------
 
@@ -123,7 +126,8 @@ CREATE TABLE `schedules` (
 
 INSERT INTO `schedules` (`id`, `medicine_id`, `dose_time`, `reminder_enabled`) VALUES
 (1, 1, '23:13:00', 1),
-(2, 2, '11:22:00', 1);
+(2, 2, '11:22:00', 1),
+(3, 3, '11:01:00', 1);
 
 -- --------------------------------------------------------
 
@@ -149,7 +153,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `phone`, `age`, `role`, `created_at`) VALUES
 (1, 'Sabarish', 'sabarish@gmail.com', '$2y$10$1AI.fCEcTmM7aXB9KvrR3eljBa6nGRgromn6uJn2EvADozH5ut/Je', '9994534546', 18, 'patient', '2026-07-15 14:59:32'),
 (2, 'Heloo', 'hellosan@gmail.com', '$2y$10$QXaYeDNtChNPocCRyD.zkuTj9/dHaupM8czfm.Mfm2T0H3kzQbJOi', '9994534547', 48, 'family', '2026-07-15 16:21:14'),
-(3, 'Dinesh', 'dinesh123@gmail.com', '$2y$10$f4W/VSuTlLx4BUjKcTF6uuiSFCANkGOwG8Lk4/V82zGGJzrEhRtyK', '9626848923', 18, 'patient', '2026-07-16 04:50:46');
+(3, 'Dinesh', 'dinesh123@gmail.com', '$2y$10$f4W/VSuTlLx4BUjKcTF6uuiSFCANkGOwG8Lk4/V82zGGJzrEhRtyK', '9626848923', 18, 'patient', '2026-07-16 04:50:46'),
+(4, 'SRI SABARISH N', 'srisabarish191107@gmail.com', '$2y$10$559NjuFwp6AdNqqHEdM2n.odWFWlylwg4iccjELvD3xKND37M/zli', '9345663878', 18, 'patient', '2026-07-16 05:27:28');
 
 --
 -- Indexes for dumped tables
@@ -212,7 +217,7 @@ ALTER TABLE `alerts`
 -- AUTO_INCREMENT for table `dose_logs`
 --
 ALTER TABLE `dose_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `family_links`
@@ -224,19 +229,19 @@ ALTER TABLE `family_links`
 -- AUTO_INCREMENT for table `medicines`
 --
 ALTER TABLE `medicines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Constraints for dumped tables
