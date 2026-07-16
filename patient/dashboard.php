@@ -192,6 +192,27 @@ if($totalSchedules > 0){
 
 }
 
+
+$progressMessage="Needs Attention";
+
+if($adherence>=90){
+
+    $progressMessage="Excellent Progress";
+
+}
+
+elseif($adherence>=70){
+
+    $progressMessage="Good Progress";
+
+}
+
+elseif($adherence>=50){
+
+    $progressMessage="Keep Going";
+
+}
+
 /* =====================================
    TODAY'S MEDICINES
 ===================================== */
@@ -241,19 +262,63 @@ $stmt->execute();
 $todayMedicines = $stmt->get_result();
 
 ?>
+<?php
 
+$hour=date("H");
+
+if($hour<12){
+
+    $greeting="Good Morning";
+
+}
+
+elseif($hour<17){
+
+    $greeting="Good Afternoon";
+
+}
+
+else{
+
+    $greeting="Good Evening";
+
+}
+
+
+$tips=array(
+
+"Drink plenty of water every day.",
+
+"Never skip prescribed medicines.",
+
+"Maintain healthy sleeping habits.",
+
+"Take medicines at the scheduled time.",
+
+"Exercise regularly for better wellbeing.",
+
+"Keep yourself hydrated throughout the day.",
+
+"Always consult your doctor before stopping medications."
+
+);
+
+
+$dailyTip=$tips[array_rand($tips)];
+
+?>
 <div class="max-w-7xl mx-auto p-8">
 
 <h1 class="text-4xl font-bold">
 
-Welcome,
-<?php echo htmlspecialchars($_SESSION["user_name"]); ?> 👋
+<?php echo $greeting; ?>,
 
+<?php echo htmlspecialchars($_SESSION["user_name"]); ?> 👋
 </h1>
 
 <p class="text-gray-500 mt-2">
 
-Here is your medication summary for today.
+Stay consistent with your medications and take care of your health today.
 
 </p>
 
@@ -336,7 +401,25 @@ Here is your medication summary for today.
 
         <h2 class="text-5xl font-bold text-purple-600 mt-4">
 
-            <?php echo $adherence; ?>%
+            <?php echo $adherence;?>%
+
+<div class="w-full bg-gray-200 rounded-full h-3 mt-4">
+
+<div
+
+class="bg-purple-600 h-3 rounded-full"
+
+style="width:<?php echo $adherence;?>%;">
+
+</div>
+
+</div>
+
+<p class="text-sm text-gray-600 mt-3 font-semibold">
+
+<?php echo $progressMessage; ?>
+
+</p>
 
         </h2>
 
@@ -358,7 +441,21 @@ Here is your medication summary for today.
 
     if($todayMedicines->num_rows==0){
 
-        echo "<p class='text-gray-500'>No medicines scheduled.</p>";
+        <div class="text-center py-10">
+
+<h3 class="text-2xl font-bold">
+
+No Medicines Scheduled Today
+
+</h3>
+
+<p class="text-gray-500 mt-3">
+
+You're all caught up for now.
+
+</p>
+
+</div>
 
     }else{
 
@@ -614,7 +711,7 @@ $upcoming = $stmt->get_result();
 
 <h2 class="text-3xl font-bold mb-6">
 
-Upcoming Medicines
+Upcoming Medicines ⏰
 
 </h2>
 
@@ -628,7 +725,9 @@ if($upcoming->num_rows==0){
 
 🎉
 
-No more medicines scheduled for today.
+You're all caught up for today!
+
+Take some rest and stay healthy.
 
 </div>
 
@@ -790,16 +889,13 @@ $next["dose_time"]
 
     <h3 class="text-xl font-bold text-blue-700">
 
-        Daily Health Tip 💙
+        Today's Health Tip 💙
 
     </h3>
 
     <p class="text-gray-700 mt-3">
 
-        Taking medicines on time improves treatment effectiveness.
-        If you miss a scheduled dose, consult your doctor instead of
-        taking a double dose unless specifically advised.
-
+        <?php echo $dailyTip; ?>
     </p>
 
 </div>
