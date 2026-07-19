@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 19, 2026 at 01:29 PM
+-- Generation Time: Jul 19, 2026 at 01:39 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -55,7 +55,8 @@ CREATE TABLE `dose_logs` (
 
 INSERT INTO `dose_logs` (`id`, `schedule_id`, `log_date`, `status`, `taken_time`) VALUES
 (1, 1, '2026-07-16', 'Taken', '2026-07-16 05:13:33'),
-(2, 3, '2026-07-16', 'Taken', '2026-07-16 07:30:52');
+(2, 3, '2026-07-16', 'Taken', '2026-07-16 07:30:52'),
+(4, 5, '2026-07-19', 'Taken', '2026-07-19 13:37:09');
 
 -- --------------------------------------------------------
 
@@ -103,7 +104,8 @@ CREATE TABLE `family_links` (
 
 INSERT INTO `family_links` (`id`, `patient_id`, `family_id`, `relationship`) VALUES
 (2, 1, 2, 'Father'),
-(3, 3, 5, NULL);
+(3, 3, 5, NULL),
+(4, 5, 6, NULL);
 
 -- --------------------------------------------------------
 
@@ -133,7 +135,8 @@ CREATE TABLE `medicines` (
 INSERT INTO `medicines` (`id`, `patient_id`, `medicine_name`, `dosage`, `take_time`, `frequency`, `meal_timing`, `is_active`, `instructions`, `notes`, `start_date`, `end_date`) VALUES
 (1, 1, 'Paracetamol', '450', NULL, 'Twice Daily', 'After Food', 1, 'Break into half and eat', 'May avoid if no pain', '2026-07-15', '2026-07-22'),
 (2, 3, 'Paracetamol', '450', NULL, 'Once Daily', 'Before Food', 1, 'Eat half only', 'nil', '2026-07-15', '2026-07-22'),
-(3, 4, 'citrizen', '250', NULL, 'Once Daily', 'After Food', 1, 'night time', '', '2026-07-16', '2026-07-23');
+(3, 4, 'citrizen', '250', NULL, 'Once Daily', 'After Food', 1, 'night time', '', '2026-07-16', '2026-07-23'),
+(5, 5, 'Paracetamol', '450', 'Afternoon', 'Once Daily', 'After Food', 1, NULL, NULL, '2026-07-20', '2026-07-24');
 
 -- --------------------------------------------------------
 
@@ -194,7 +197,8 @@ CREATE TABLE `schedules` (
 INSERT INTO `schedules` (`id`, `medicine_id`, `dose_time`, `reminder_enabled`) VALUES
 (1, 1, '23:13:00', 1),
 (2, 2, '11:22:00', 1),
-(3, 3, '11:01:00', 1);
+(3, 3, '11:01:00', 1),
+(5, 5, '13:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -208,6 +212,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `phone` varchar(15) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
   `role` enum('patient','family','admin') NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -216,12 +221,13 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `phone`, `role`, `created_at`) VALUES
-(1, 'Sabarish', 'sabarish@gmail.com', '$2y$10$1AI.fCEcTmM7aXB9KvrR3eljBa6nGRgromn6uJn2EvADozH5ut/Je', '9994534546', 'patient', '2026-07-15 14:59:32'),
-(2, 'Heloo', 'hellosan@gmail.com', '$2y$10$QXaYeDNtChNPocCRyD.zkuTj9/dHaupM8czfm.Mfm2T0H3kzQbJOi', '9994534547', 'family', '2026-07-15 16:21:14'),
-(3, 'Dinesh', 'dinesh123@gmail.com', '$2y$10$f4W/VSuTlLx4BUjKcTF6uuiSFCANkGOwG8Lk4/V82zGGJzrEhRtyK', '9626848923', 'patient', '2026-07-16 04:50:46'),
-(4, 'SRI SABARISH N', 'srisabarish191107@gmail.com', '$2y$10$559NjuFwp6AdNqqHEdM2n.odWFWlylwg4iccjELvD3xKND37M/zli', '9345663878', 'patient', '2026-07-16 05:27:28'),
-(5, 'Saravana', 'saravana@gmail.com', '$2y$10$ud4GWNBYtLXkTLkbVQh0uONaIu476r3SN9/pGc42kCa0/9PzK5xeK', '9994657066', 'patient', '2026-07-19 09:33:58');
+INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `phone`, `age`, `role`, `created_at`) VALUES
+(1, 'Sabarish', 'sabarish@gmail.com', '$2y$10$1AI.fCEcTmM7aXB9KvrR3eljBa6nGRgromn6uJn2EvADozH5ut/Je', '9994534546', NULL, 'patient', '2026-07-15 14:59:32'),
+(2, 'Heloo', 'hellosan@gmail.com', '$2y$10$QXaYeDNtChNPocCRyD.zkuTj9/dHaupM8czfm.Mfm2T0H3kzQbJOi', '9994534547', NULL, 'family', '2026-07-15 16:21:14'),
+(3, 'Dinesh', 'dinesh123@gmail.com', '$2y$10$f4W/VSuTlLx4BUjKcTF6uuiSFCANkGOwG8Lk4/V82zGGJzrEhRtyK', '9626848923', NULL, 'patient', '2026-07-16 04:50:46'),
+(4, 'SRI SABARISH N', 'srisabarish191107@gmail.com', '$2y$10$559NjuFwp6AdNqqHEdM2n.odWFWlylwg4iccjELvD3xKND37M/zli', '9345663878', NULL, 'patient', '2026-07-16 05:27:28'),
+(5, 'Saravana', 'saravana@gmail.com', '$2y$10$ud4GWNBYtLXkTLkbVQh0uONaIu476r3SN9/pGc42kCa0/9PzK5xeK', '9994657066', NULL, 'patient', '2026-07-19 09:33:58'),
+(6, 'Prakash', 'psk123@gmail.com', '$2y$10$LC0OfUehBkzt68bR5rS46.yUBj1..L2A4aRxbPMDtLnfgZ00J.UVG', '8300011111', 34, 'family', '2026-07-19 11:34:54');
 
 --
 -- Indexes for dumped tables
@@ -298,7 +304,7 @@ ALTER TABLE `alerts`
 -- AUTO_INCREMENT for table `dose_logs`
 --
 ALTER TABLE `dose_logs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `emergency_contacts`
@@ -310,13 +316,13 @@ ALTER TABLE `emergency_contacts`
 -- AUTO_INCREMENT for table `family_links`
 --
 ALTER TABLE `family_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `medicines`
 --
 ALTER TABLE `medicines`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `patient_profiles`
@@ -328,13 +334,13 @@ ALTER TABLE `patient_profiles`
 -- AUTO_INCREMENT for table `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
