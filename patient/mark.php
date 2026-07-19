@@ -67,7 +67,7 @@ if($result->num_rows > 0){
 
 }
 
-header("Location: today_medicines.php");
+header("Location: dashboard.php");
 exit();
 
 ?>

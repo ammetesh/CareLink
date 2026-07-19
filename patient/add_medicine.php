@@ -6,6 +6,7 @@ require_once "../config/db.php";
 
 $message = "";
 $messageType = "";
+$redirect = false;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -134,6 +135,8 @@ if ($stmt->execute()) {
 
     $messageType = "success";
 
+    $redirect = true;
+
 
 } else {
 
@@ -160,17 +163,29 @@ if ($stmt->execute()) {
 
     <?php if($message!=""): ?>
 
-        <div class="<?php echo $messageType=="success"
-            ? "bg-green-100 border border-green-500 text-green-700"
-            : "bg-red-100 border border-red-500 text-red-700"; ?>
+<div class="<?php echo $messageType=="success"
+? "bg-green-100 border border-green-500 text-green-700"
+: "bg-red-100 border border-red-500 text-red-700"; ?>
 
-            p-4 rounded mb-6">
+p-4 rounded mb-6">
 
-            <?php echo $message; ?>
+<?php echo $message; ?>
 
-        </div>
 
-    <?php endif; ?>
+<?php if($redirect){ ?>
+
+<p class="text-gray-600 mt-3">
+
+Redirecting to your dashboard...
+
+</p>
+
+<?php } ?>
+
+
+</div>
+
+<?php endif; ?>
 
     <form method="POST">
 
@@ -325,6 +340,27 @@ Night
     </form>
 
 </div>
+<?php
+
+if($redirect){
+
+?>
+
+<script>
+
+setTimeout(function(){
+
+window.location.href="dashboard.php";
+
+},2000);
+
+</script>
+
+<?php
+
+}
+
+?>
 
 <?php
 include "../includes/footer.php";
