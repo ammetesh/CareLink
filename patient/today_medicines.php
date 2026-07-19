@@ -8,207 +8,145 @@ $patient_id = $_SESSION["user_id"];
 
 $sql = "
 SELECT
-
-medicines.medicine_name,
-medicines.dosage,
-medicines.meal_timing,
-
-schedules.id AS schedule_id,
-schedules.dose_time,
-
-dose_logs.status
-
+    medicines.medicine_name,
+    medicines.dosage,
+    medicines.meal_timing,
+    schedules.id AS schedule_id,
+    schedules.dose_time,
+    dose_logs.status
 FROM medicines
-
 JOIN schedules
-ON medicines.id=schedules.medicine_id
-
+    ON medicines.id = schedules.medicine_id
 LEFT JOIN dose_logs
-ON schedules.id=dose_logs.schedule_id
-AND dose_logs.log_date=CURDATE()
-
-FROM medicines
-
-JOIN schedules
-
-ON medicines.id=schedules.medicine_id
-
-WHERE medicines.patient_id=?
-
-AND medicines.is_active=1
-
+    ON schedules.id = dose_logs.schedule_id
+    AND dose_logs.log_date = CURDATE()
+WHERE medicines.patient_id = ?
+    AND medicines.is_active = 1
 ORDER BY schedules.dose_time
 ";
 
 $stmt = $conn->prepare($sql);
-
-$stmt->bind_param("i",$patient_id);
-
+$stmt->bind_param("i", $patient_id);
 $stmt->execute();
-
-$result=$stmt->get_result();
+$result = $stmt->get_result();
 
 ?>
 
 <div class="max-w-5xl mx-auto p-8">
 
-<h1 class="text-3xl font-bold mb-8">
+    <h1 class="text-3xl font-bold mb-8">
+        Today's Medicines
+    </h1>
 
-Today's Medicines
+    <?php if ($result->num_rows == 0) { ?>
 
-</h1>
+        <div class="bg-white rounded-xl shadow p-8 text-center">
+            No medicines scheduled.
+        </div>
 
-<?php
+    <?php } else { ?>
 
-if($result->num_rows==0){
+        <?php while ($row = $result->fetch_assoc()) {
 
-?>
+            $status = $row["status"] ?? "Pending";
+        ?>
 
-<div class="bg-white rounded-xl shadow p-8 text-center">
+            <div class="bg-white rounded-xl shadow mb-6 p-6">
 
-No medicines scheduled.
+                <div class="flex justify-between items-center">
 
-</div>
+                    <div>
 
-<?php
+                        <h2 class="text-2xl font-bold">
+                            💊 <?php echo htmlspecialchars($row["medicine_name"]); ?>
+                        </h2>
 
-}
-$status = $row["status"] ?? "Pending";
-while($row=$result->fetch_assoc()){
+                        <p class="text-gray-600 mt-2">
+                            <?php echo htmlspecialchars($row["dosage"]); ?><br>
+                            <?php echo htmlspecialchars($row["meal_timing"]); ?>
+                        </p>
 
-?>
+                        <br>
 
-<div class="bg-white rounded-xl shadow mb-6 p-6">
+                        <p class="text-blue-600 font-semibold">
+                            Reminder Status:
+                        </p>
 
-<div class="flex justify-between items-center">
+                        <p>
 
-<div>
+                            <?php
 
-<h2 class="text-2xl font-bold">
+                            if ($status == "Taken") {
 
-💊 <?php echo $row["medicine_name"]; ?>
+                                echo "● Medicine completed successfully.";
 
-</h2>
+                            } elseif ($status == "Skipped") {
 
-<p class="text-gray-600 mt-2">
+                                echo "● Medicine was skipped.";
 
-<?php echo $row["dosage"]; ?>
+                            } elseif ($status == "Snoozed") {
 
-<br>
+                                echo "● Medicine has been snoozed.";
 
-<?php echo $row["meal_timing"]; ?>
-<br><br>
+                            } else {
 
-<p class="text-blue-600 font-semibold">
+                                echo "● Reminder Active.";
 
-Reminder Status :
+                            }
 
-</p>
+                            ?>
 
+                        </p>
 
-<?php
+                    </div>
 
-$currentTime = date("H:i:s");
+                    <div class="text-right">
 
+                        <p class="text-xl font-bold text-blue-600">
+                            <?php echo date("h:i A", strtotime($row["dose_time"])); ?>
+                        </p>
 
-if($status=="Taken"){
+                    </div>
 
-echo "● Medicine completed successfully.";
+                </div>
 
-}
+                <div class="flex gap-4 mt-6">
 
-else if($status=="Skipped"){
+                    <?php if ($status == "Pending") { ?>
 
-echo "● Medicine was skipped.";
+                        <a
+                            href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Taken"
+                            class="bg-green-600 text-white px-4 py-2 rounded">
+                            Taken
+                        </a>
 
-}
+                        <a
+                            href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Snoozed"
+                            class="bg-yellow-500 text-white px-4 py-2 rounded">
+                            Snooze
+                        </a>
 
-else{
+                        <a
+                            href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Skipped"
+                            class="bg-red-600 text-white px-4 py-2 rounded">
+                            Skip
+                        </a>
 
-echo "● Reminder Active.";
+                    <?php } else { ?>
 
-}
+                        <span class="text-green-600 font-semibold">
+                            Already Marked ✓
+                        </span>
 
-?>
+                    <?php } ?>
 
-</p>
+                </div>
 
-</div>
+            </div>
 
-<div class="text-right">
+        <?php } ?>
 
-<p class="text-xl font-bold text-blue-600">
-
-<?php echo date("h:i A",strtotime($row["dose_time"])); ?>
-
-</p>
-
-</div>
-
-</div>
-
-<div class="flex gap-4 mt-6">
-
-<?php
-
-if($status=="Pending"){
-
-?>
-
-<a
-href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Taken"
-class="bg-green-600 text-white px-4 py-2 rounded">
-
-Taken
-
-</a>
-
-
-<a
-href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Snoozed"
-class="bg-yellow-500 text-white px-4 py-2 rounded">
-
-Snooze
-
-</a>
-
-
-<a
-href="mark.php?id=<?php echo $row["schedule_id"]; ?>&status=Skipped"
-class="bg-red-600 text-white px-4 py-2 rounded">
-
-Skip
-
-</a>
-
-
-<?php
-
-}else{
-
-?>
-
-<span class="text-green-600 font-semibold">
-
-Already Marked ✓
-
-</span>
-
-<?php
-
-}
-
-?>
-
-</div>
-
-</div>
-
-<?php
-
-}
-
-?>
+    <?php } ?>
 
 </div>
 
